@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserCreateDto } from './dto/user.dto';
@@ -13,13 +24,28 @@ export class UserController {
     return this.userService.getUserList();
   }
 
-  @Post('account/create')
-  async createUserAccount(@Req() req: any, @Body() body: UserCreateDto) {
+  @Get(':userId')
+  async getUserSingle(@Param('userId') userId: string) {
+    return this.userService.getUserSingle(userId);
+  }
+
+  @Post('create')
+  async createUser(@Req() req: any, @Body() body: UserCreateDto) {
     return this.userService.createUser(body);
   }
 
-  @Get(':userId')
-  async getUserProfile(@Param('userId') userId: string) {
-    return this.userService.getUserProfile(userId);
+  @Put(':userId')
+  async updateUserSingle(
+    @Req() req: any,
+    @Body() body: UserCreateDto,
+    @Param('userId') userId: string,
+  ) {
+    return this.userService.updateUserSingle(userId, body);
+  }
+
+  @Delete(':userId')
+  async deleteUserSingle(@Res() res: any, @Param('userId') userId: any) {
+    const deletedUser = await this.userService.deleteUserSingle(userId);
+    return res.status(200).json(deletedUser);
   }
 }
