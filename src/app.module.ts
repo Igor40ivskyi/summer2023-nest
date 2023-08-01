@@ -7,12 +7,14 @@ import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
 import { PetModule } from './pet/pet.module';
 import { TypeOrmConfiguration } from './config/database/type-orm-configuration';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync(TypeOrmConfiguration.config),
     UserModule,
     PetModule,
+    AuthModule,
   ],
   controllers: [AppController, UserController],
   providers: [AppService, UserService],
