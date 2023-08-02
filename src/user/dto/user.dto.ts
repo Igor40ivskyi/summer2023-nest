@@ -8,10 +8,20 @@ import {
 } from 'class-validator';
 
 export class UserCreateDto {
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: true, example: 'Uriy' })
   @IsString()
   @IsNotEmpty()
-  name: string;
+  userName: string;
+
+  @ApiProperty({ required: true, example: 'user@gmail.com' })
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({ required: true, example: 'User1111' })
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 
   @ApiProperty({ required: true })
   @IsNumber()
@@ -19,17 +29,7 @@ export class UserCreateDto {
   age: number;
 
   @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  city: string;
-
-  @ApiProperty({ required: true, example: 'user@gmail.com' })
-  @IsString()
-  @IsNotEmpty()
-  email: string;
-
-  @ApiProperty({ required: false })
   @IsBoolean()
   @IsOptional()
-  status: boolean;
+  isActive: boolean;
 }

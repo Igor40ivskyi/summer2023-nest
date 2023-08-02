@@ -1,15 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserCreateDto } from './dto/user.dto';
+import * as bcrypt from 'bcrypt';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UserService {
   private userList = [];
+  private salt = 5;
 
-  async getUserList() {
-    return this.userList;
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly authService: AuthService,
+  ) {}
+
+  async getUserList(): Promise<User[]> {
+    return this.userRepository.find();
   }
 
-  async createUser(data) {
-    return this.userList.push(data);
+  async createUser(data: UserCreateDto) {
+    const foundUser = await this.userRepository.findOne({
+      where: {
+        email: data.email,
+      },
+    });
+
+    if (foundUser) {
+      throw new HttpException(
+        'User with given email exist already',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    data.password = await this.getHash(data.password);
+    const newUser = await this.userRepository.create(data);
+    await this.userRepository.save(newUser);
+
+    const token = await this.signIn(newUser);
+
+    return token;
+  }
+
+  async getHash(password: string) {
+    return await bcrypt.hash(password, this.salt);
+  }
+
+  async signIn(user) {
+    return await this.authService.signIn({
+      id: user.id.toString(),
+    });
   }
 
   async getUserSingle(userId: string) {
