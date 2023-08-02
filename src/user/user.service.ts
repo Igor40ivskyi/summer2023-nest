@@ -40,7 +40,7 @@ export class UserService {
 
     const token = await this.signIn(newUser);
 
-    return token;
+    return { token };
   }
 
   async getHash(password: string) {
