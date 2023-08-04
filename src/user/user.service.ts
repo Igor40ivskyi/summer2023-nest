@@ -6,6 +6,8 @@ import { UserCreateDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from '../auth/auth.service';
 import { PublicUserInfoDto } from '../common/query/user.query.dto';
+import { paginateRawAndEntities } from 'nestjs-typeorm-paginate';
+import { PublicUserData } from './interface/user.interface';
 
 @Injectable()
 export class UserService {
@@ -37,7 +39,17 @@ export class UserService {
 
     queryBuilder.orderBy(`"${query.sort}"`, query.order as 'ASC' | 'DESC');
 
-    return this.userRepository.find();
+    const [pagination, rawResults] = await paginateRawAndEntities(
+      queryBuilder,
+      options,
+    );
+
+    return {
+      page: pagination.meta.currentPage,
+      pages: pagination.meta.totalPages,
+      countItem: pagination.meta.totalItems,
+      entities: rawResults as [PublicUserData],
+    };
   }
 
   async createUser(data: UserCreateDto) {
