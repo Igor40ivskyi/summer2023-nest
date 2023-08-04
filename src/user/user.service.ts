@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserCreateDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from '../auth/auth.service';
+import { PublicUserInfoDto } from '../common/query/user.query.dto';
 
 @Injectable()
 export class UserService {
@@ -16,7 +17,26 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
 
-  async getUserList(): Promise<User[]> {
+  async getUserList(query: PublicUserInfoDto) {
+    query.sort = query.sort || 'id';
+    query.order = query.order || 'ASC';
+    const options = {
+      page: query.page || 1,
+      limit: query.limit || 2,
+    };
+
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('users')
+      .select('id, age, email, "userName"');
+
+    if (query.search) {
+      queryBuilder.where('"userName" IN(:...search', {
+        search: query.search.split(','),
+      });
+    }
+
+    queryBuilder.orderBy(`"${query.sort}"`, query.order as 'ASC' | 'DESC');
+
     return this.userRepository.find();
   }
 

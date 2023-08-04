@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -14,6 +15,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserCreateDto } from './dto/user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { PublicUserInfoDto } from '../common/query/user.query.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -22,8 +24,8 @@ export class UserController {
 
   @UseGuards(AuthGuard())
   @Get('list')
-  async getUserList() {
-    return this.userService.getUserList();
+  async getUserList(@Query() query: PublicUserInfoDto) {
+    return this.userService.getUserList(query);
   }
 
   @Get(':userId')

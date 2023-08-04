@@ -19,10 +19,10 @@ export class BearerStrategy extends PassportStrategy(Strategy, 'bearer') {
   }
 
   async validate(token: string): Promise<any> {
-    let user: User;
+    let user = null;
     try {
       const payload = await this.jwtService.verify(token);
-      user = await this.authService.validateUser(payload.id);
+      user = await this.authService.validateUser(payload);
     } catch (e) {
       console.log(new Date().toISOString(), token);
       throw new UnauthorizedException();
