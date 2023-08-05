@@ -8,6 +8,7 @@ import { AuthService } from '../auth/auth.service';
 import { PublicUserInfoDto } from '../common/query/user.query.dto';
 import { paginateRawAndEntities } from 'nestjs-typeorm-paginate';
 import { PublicUserData } from './interface/user.interface';
+import { PaginatedDto } from '../common/pagination/response';
 
 @Injectable()
 export class UserService {
@@ -19,7 +20,9 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
 
-  async getUserList(query: PublicUserInfoDto) {
+  async getUserList(
+    query: PublicUserInfoDto,
+  ): Promise<PaginatedDto<PublicUserData>> {
     query.sort = query.sort || 'id';
     query.order = query.order || 'ASC';
     const options = {
