@@ -53,10 +53,4 @@ export class UserController {
   ) {
     return this.userService.updateUserSingle(userId, body);
   }
-
-  @Delete(':userId')
-  async deleteUserSingle(@Res() res: any, @Param('userId') userId: any) {
-    const deletedUser = await this.userService.deleteUserSingle(userId);
-    return res.status(200).json(deletedUser);
-  }
 }
